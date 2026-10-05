@@ -1,5 +1,7 @@
 # omafly
 
+![omafly](preview.png)
+
 An Omarchy overlay panel for [gnat](https://github.com/lubabs770/gnat), the
 fruit fly that is simulated from its connectome and walks on your Hyprland
 windows.
