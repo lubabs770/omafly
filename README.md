@@ -15,21 +15,33 @@ live `[menu]` theme, so it follows every theme switch.
 
 omafly is only the panel. The fly itself is the `gnat` binary, so you need both.
 
-**1. Build gnat from source,** at the commit this version of omafly is
-reviewed against. No prebuilt binary is published.
+**1. Install gnat v0.1.0.** Download the release, check it against the
+published SHA-256, then unpack it and link the binary onto `PATH` (x86-64 Linux):
 
 ```sh
-git clone https://github.com/lubabs770/gnat
-cd gnat
-git checkout 79d9281e1713d21c6ac1167b785b2e1f306f0f35
-cargo build --release --locked
-ln -s "$PWD/target/release/gnat" ~/.local/bin/gnat
+curl -fLO https://github.com/lubabs770/gnat/releases/download/v0.1.0/gnat-linux-x86_64.tar.gz
+echo "cee5f89445b6c6dc3435f3750f77fcb2dd8b02c40da4f24e52cfad82066eabc0  gnat-linux-x86_64.tar.gz" | sha256sum -c
+mkdir -p ~/.local/share ~/.local/bin
+tar -C ~/.local/share -xzf gnat-linux-x86_64.tar.gz
+ln -sfn ~/.local/share/gnat/gnat ~/.local/bin/gnat
 ```
 
-`git checkout` of a full commit hash fails unless that exact commit is in the
-clone, and `--locked` builds with the dependency versions recorded in that
-commit's `Cargo.lock`. gnat finds its connectome data relative to the
-executable, so keep the checkout where it is.
+`sha256sum -c` stops with `FAILED` if the download is not the reviewed build;
+don't unpack it then. The release is
+[immutable](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases),
+so the tag and its asset can't be replaced after publishing. With `gh`, you can
+also check the file against GitHub's release attestation:
+`gh release verify-asset v0.1.0 gnat-linux-x86_64.tar.gz -R lubabs770/gnat`.
+The binary finds its connectome in `data/` beside it, which the archive
+includes.
+
+To build from source instead, check out the same tag:
+
+```sh
+git clone --branch v0.1.0 https://github.com/lubabs770/gnat
+cd gnat && cargo build --release --locked
+ln -sfn "$PWD/target/release/gnat" ~/.local/bin/gnat
+```
 
 **2. Add the plugin:**
 
@@ -68,7 +80,7 @@ Bind that to a key in `~/.config/hypr/bindings.lua`, or use it as the
 ```sh
 omarchy plugin remove io.github.lubabs770.omafly   # unlinks the plugin; nothing else is touched
 gnat quit; rm ~/.local/bin/gnat                   # and gnat, if you no longer want it
-rm -r path/to/gnat                                 # its checkout
+rm -r ~/.local/share/gnat                          # (or your gnat checkout)
 ```
 
 ## What it does and doesn't touch
