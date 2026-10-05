@@ -35,13 +35,19 @@ also check the file against GitHub's release attestation:
 The binary finds its connectome in `data/` beside it, which the archive
 includes.
 
-To build from source instead, check out the same tag:
+To build from source instead, check out the exact commit v0.1.0 was built
+from, by its full hash, before building:
 
 ```sh
-git clone --branch v0.1.0 https://github.com/lubabs770/gnat
-cd gnat && cargo build --release --locked
+git clone https://github.com/lubabs770/gnat
+cd gnat
+git checkout --detach 92289f3a3004e2ea3c6853c5d939f577bd97bcaa
+cargo build --release --locked
 ln -sfn "$PWD/target/release/gnat" ~/.local/bin/gnat
 ```
+
+`git checkout` of a full hash fails unless that exact commit is in the clone,
+and `--locked` builds with the dependency versions in its `Cargo.lock`.
 
 **2. Add the plugin:**
 
